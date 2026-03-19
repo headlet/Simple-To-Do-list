@@ -4,7 +4,7 @@
         <h1 class="text-xl font-bold">To-do List</h1>
 
         <div class="space-x-4">
-            <a href="index.php" class="hover:text-teal-400 transition">Home</a>
+            
             
             <a href="index.php?view=create" 
                class="bg-teal-500 hover:bg-teal-600 px-4 py-2 rounded-lg transition">

@@ -7,8 +7,8 @@ switch ($page) {
         $content = 'view/Todo/create.php';
         break;
 
-    case 'store':
-        $content = 'view/Todo/tore.php';
+    case 'edit':
+        $content = 'view/Todo/edit.php';
         break;
 
     default:

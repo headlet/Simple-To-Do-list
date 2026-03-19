@@ -15,7 +15,7 @@ $tasks = $taskManager->index();
 
     <!-- TASK LIST -->
     <div class="max-w-2xl mx-auto mt-6">
-        <ul class="space-y-3">
+        <ul class="space-y-4">
 
             <?php foreach ($tasks as $task): ?>
                 <li class="flex items-center justify-between bg-white shadow-sm border rounded-lg px-4 py-3 hover:shadow-md transition">
@@ -48,57 +48,61 @@ $tasks = $taskManager->index();
         </ul>
     </div>
 
-    <!-- ADD TASK -->
-    <div class="flex justify-center mt-10 px-4">
+    <!-- Add Task -->
+    <div id="taskModal"
+        class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm">
 
-        <div class="w-full max-w-sm bg-white shadow-lg rounded-2xl p-6">
+        <div class="flex items-center justify-center min-h-screen">
 
-            <div class="flex items-center justify-between mb-6">
-                <a href="index.php"
-                    class="text-sm text-white bg-blue-600 hover:bg-blue-700 transition px-3 py-2 rounded-lg">
-                    ← Back Home
-                </a>
+            <div class="bg-white w-full max-w-sm rounded-2xl shadow-lg p-6 relative">
 
+                <!-- Close Button -->
+                <button id="closeTaskModal"
+                    class="absolute top-2 right-3 text-gray-500 hover:text-red-500 text-xl">
+                    ✕
+                </button>
+
+                <h2 class="text-2xl font-bold text-blue-600 text-center mb-4">
+                    Add Task
+                </h2>
+
+                <form action="" method="post" class="space-y-4">
+
+                    <input type="text" name="title"
+                        placeholder="Enter task..."
+                        class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-400"
+                        required>
+
+                    <input type="text" name="status"
+                        value="pending"
+                        readonly
+                        class="w-full bg-gray-100 border rounded-lg px-3 py-2 text-gray-500">
+
+                    <button type="submit"
+                        class="w-full bg-teal-500 hover:bg-teal-600 text-white py-2 rounded-lg">
+                        Save Task
+                    </button>
+
+                </form>
 
             </div>
 
-            <form action="" method="post" class="space-y-5">
-                <h2 class="text-2xl font-bold text-blue-600 text-center">Add Task</h2>
-                <div>
-                    <label for="title" class="block text-sm font-medium text-slate-600 mb-1">
-                        Task Title
-                    </label>
-                    <input
-                        type="text"
-                        name="title"
-                        id="title"
-                        placeholder="Enter your task..."
-                        class="w-full border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-400"
-                        required>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-slate-600 mb-1">
-                        Status
-                    </label>
-                    <input
-                        type="text"
-                        name="status"
-                        value="pending"
-                        readonly
-                        class="w-full bg-slate-100 border border-slate-200 rounded-lg px-3 py-2 text-slate-500">
-                </div>
-
-                <button
-                    type="submit"
-                    class="w-full bg-teal-500 hover:bg-teal-600 text-white font-medium py-2 rounded-lg transition">
-                    Save Task
-                </button>
-
-            </form>
-
         </div>
-
     </div>
 
 </section>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script>
+    $(document).ready(function() {
+
+        $("#openTaskModal").click(function() {
+            $("#taskModal").fadeIn(200).removeClass("hidden");
+        });
+
+        $("#closeTaskModal").click(function() {
+            $("#taskModal").fadeOut(200);
+        });
+
+    });
+</script>

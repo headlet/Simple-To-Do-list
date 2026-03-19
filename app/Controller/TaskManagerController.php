@@ -9,7 +9,11 @@ class TaskManagerController {
     }
 
     public function index(){
+        if(file_exists($this->storageFile)){
+            file_put_contents($this->storageFile, json_encode([]));
+            }
 
+        return json_decode(file_get_contents($this->storageFile, true));
     }
 
     public function create(){

@@ -11,6 +11,17 @@ private function __construct($id, $title, $status='pending')
     $this->status = $status;
 }
 
+//getter
+public function getId(){
+    return $this->id;
+}
+public function getTitle(){
+    return $this->title;
+}
+public function getStatus(){
+    return $this->status;
+}   
 
+//
 
 }

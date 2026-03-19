@@ -47,4 +47,13 @@ class task
     {
         return $this->status;
     }
+
+    public function toArray()
+    {
+        return [
+            'id' => $this->id,
+            'title' => $this->title,
+            'status' => $this->status,
+        ];
+    }
 }

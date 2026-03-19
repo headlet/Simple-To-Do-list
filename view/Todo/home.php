@@ -18,9 +18,23 @@ $tasks = $taskManager->index();
                         <?= $task['title'] ?>
                     </span>
 
-                    <i class="fa-solid fa-circle-check 
-                    <?= ($task['status'] ?? '') === 'complete' ? 'text-green-500' : 'text-red-500' ?>">
-                    </i>
+                    <span class="flex items-center gap-3">
+
+                        <a href="index.php?view=edit&id=<?= $task['id'] ?>" class="text-blue-500 hover:text-blue-700">
+                            <i class="fas fa-edit"></i>
+                        </a>
+
+                        <a href="delete.php?id=<?= $task['id'] ?>"
+                            onclick="return confirmDelete()"
+                            class="text-red-500 hover:text-red-700">
+                            <i class="fa-solid fa-trash"></i>
+                        </a>
+
+                        <i class="fa-solid fa-circle-check 
+        <?= ($task['status'] ?? '') === 'complete' ? 'text-green-500' : 'text-red-500' ?>">
+                        </i>
+
+                    </span>
 
                 </li>
             <?php endforeach; ?>

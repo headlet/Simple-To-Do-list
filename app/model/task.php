@@ -1,27 +1,50 @@
 <?php
-class task {
+class task
+{
+
     private $id;
     private $title;
     private $status;
 
-private function __construct($id, $title, $status='pending')
-{
-    $this->id= $id;
-    $this->title = $title;
-    $this->status = $status;
-}
+    private function __construct(int $id, string $title, string $status)
+    {
+        $this->id = $id;
+        $this->title = $title;
+        $this->status = $status;
+    }
 
-//getter
-public function getId(){
-    return $this->id;
-}
-public function getTitle(){
-    return $this->title;
-}
-public function getStatus(){
-    return $this->status;
-}   
+    //setter
+    public function setId() {}
 
-//
+    public function setTitle($title)
+    {
+        $cleanTitle = trim($title);
+        if ($cleanTitle === '') {
+            throw new Exception('Title is empty. Please add title');
+        }
 
+        $this->title = htmlspecialchars($cleanTitle);
+    }
+
+    public function setStatus($status)
+    {
+        if (!in_array($status, ['pending', 'completed'])) {
+            throw new Exception("Status is invalid. Please select the valid status");
+        }
+        $this->status = $status;
+    }
+
+    //getter
+    public function getId()
+    {
+        return $this->id;
+    }
+    public function getTitle()
+    {
+        return $this->title;
+    }
+    public function getStatus()
+    {
+        return $this->status;
+    }
 }

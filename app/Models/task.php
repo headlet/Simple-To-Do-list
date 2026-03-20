@@ -6,11 +6,11 @@ class task
     private $title;
     private $status;
 
-    private function __construct(int $id, string $title, string $status)
+    public function __construct(int $id, string $title, string $status)
     {
         $this->id = $id;
-        $this->title = $title;
-        $this->status = $status;
+        $this->setTitle($title);
+        $this->setStatus($status);
     }
 
     //setter
@@ -28,7 +28,7 @@ class task
 
     public function setStatus($status)
     {
-        if (!in_array($status, ['pending', 'completed'])) {
+        if (!in_array($status, ['pending', 'complete'])) {
             throw new Exception("Status is invalid. Please select the valid status");
         }
         $this->status = $status;

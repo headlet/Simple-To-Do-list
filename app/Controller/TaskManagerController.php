@@ -18,7 +18,25 @@ class TaskManagerController
         return json_decode($data, true) ?? [];
     }
 
-    public function create() {}
+    public function create($title, $status)
+{
+    try {
+        $tasks = $this->index();
+
+        $newId = empty($tasks) ? 1 : end($tasks)['id'] + 1;
+
+        $task = new Task($newId, $title, $status);
+
+        $tasks[] = $task->toArray();
+
+        file_put_contents($this->storageFile, json_encode($tasks, JSON_PRETTY_PRINT));
+
+        return true;
+
+    } catch (Exception $e) {
+        return false;
+    }
+}
 
     public function update() {}
 

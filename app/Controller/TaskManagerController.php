@@ -13,52 +13,18 @@ class TaskManagerController
     {
         switch ($action) {
             case 'create':
-                if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
-                    $result = $this->create($_POST['title'], $_POST['status']);
-
-                    if ($result === true) {
-                        $_SESSION['flash'] = [
-                            'type' => 'success',
-                            'message' => 'Task added successfully!'
-                        ];
-                    } else {
-                        $_SESSION['flash'] = [
-                            'type' => 'error',
-                            'message' => 'Something went wrong while adding task!'
-                        ];
-                    }
-
-                    header("Location: index.php");
-                    exit;
-                }
+                return $this->handleCreateForm();
                 break;
 
             case 'edit':
-                if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
-                    $result = $this->update(
-                        $_POST['id'],
-                        $_POST['title'],
-                        $_POST['status']
-                    );
-
-                    if ($result) {
-                        $_SESSION['flash'] = [
-                            'type' => 'success',
-                            'message' => 'Task updated successfully!'
-                        ];
-                    } else {
-                        $_SESSION['flash'] = [
-                            'type' => 'error',
-                            'message' => 'Failed to update task!'
-                        ];
-                    }
-
-                    header("Location: index.php");
-                    exit;
-                }
+                return $this->handleEditForm();
                 break;
+            case 'delete':
+                return $this->handleDeleteForm();
+                break;
+
+            default:
+                return $this->index();
         }
     }
 
@@ -71,14 +37,56 @@ class TaskManagerController
         return json_decode($data, true) ?? [];
     }
 
+    public function handleCreateForm()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if ($_POST['title'] === '') {
+                $_SESSION['formError'] = [
+                    'message' => 'Title empty.. Please add title'
+                ];
+                exit;
+            }
+
+            if (!in_array($_POST['status'], ['pending', 'complete'])) {
+                $_SESSION['formError'] = [
+                    'message' => 'Please status.'
+                ];
+                exit;
+            }
+
+
+            $result = $this->create($_POST['title'], $_POST['status']);
+
+            if ($result === true) {
+                $_SESSION['flash'] = [
+                    'type' => 'success',
+                    'message' => 'Task added successfully!'
+                ];
+            } else {
+                $_SESSION['flash'] = [
+                    'type' => 'error',
+                    'message' => 'Something went wrong while adding task!'
+                ];
+            }
+
+            header("Location: index.php");
+            exit;
+        }
+    }
+
     public function create($title, $status)
     {
         try {
             $tasks = $this->index();
 
+            if (empty(trim($title))) {
+                throw new Exception("Title cannot be empty");
+            }
+
+            
             $newId = empty($tasks) ? 1 : end($tasks)['id'] + 1;
 
-            $task = new Task($newId, $title, $status);
+            $task = new Task($newId, htmlspecialchars(trim($title)), $status);
 
             $tasks[] = $task->toArray();
 
@@ -90,11 +98,45 @@ class TaskManagerController
         }
     }
 
+    public function handleEditForm()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+            $result = $this->update(
+                $_POST['id'],
+                $_POST['title'],
+                $_POST['status']
+            );
+
+            if ($result) {
+                $_SESSION['flash'] = [
+                    'type' => 'success',
+                    'message' => 'Task updated successfully!'
+                ];
+            } else {
+                $_SESSION['flash'] = [
+                    'type' => 'error',
+                    'message' => 'Failed to update task!'
+                ];
+            }
+
+            header("Location: index.php");
+            exit;
+        }
+    }
 
     public function update($id, $title, $status)
     {
         try {
             $tasks = $this->index();
+
+            if (empty(trim($title))) {
+                throw new Exception("Title cannot be empty");
+            }
+
+            if (!in_array($status, ['pending', 'complete'])) {
+                throw new Exception("Invalid status");
+            }
 
             foreach ($tasks as $key => $task) {
 
@@ -102,9 +144,6 @@ class TaskManagerController
 
                     $tasks[$key]['title'] = htmlspecialchars(trim($title));
 
-                    if (!in_array($status, ['pending', 'complete'])) {
-                        throw new Exception("Invalid status");
-                    }
 
                     $tasks[$key]['status'] = $status;
 
@@ -113,7 +152,7 @@ class TaskManagerController
                         json_encode($tasks, JSON_PRETTY_PRINT)
                     );
 
-                    return true; // STOP immediately
+                    return true;
                 }
             }
 
@@ -123,5 +162,48 @@ class TaskManagerController
         }
     }
 
-    public function delete() {}
+    public function handleDeleteForm()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (!isset($_POST['id'])) {
+                $_SESSION['flash'] = [
+                    'type' => 'error',
+                    'message' => 'Missing task ID'
+                ];
+                header("Location: index.php");
+                exit;
+            }
+
+            $result = $this->removeTask((int)$_POST['id']);
+
+            $_SESSION['flash'] = [
+                'type' => $result ? 'success' : 'error',
+                'message' => $result ? 'Task deleted successfully!' : 'Failed to delete task!'
+            ];
+
+            header("Location: index.php");
+            exit;
+        }
+    }
+
+    private function removeTask($id)
+    {
+        try {
+            $tasks = $this->index();
+            $originalCount = count($tasks);
+            $tasks = array_filter($tasks, fn($task) => $task['id'] !== $id);
+            if (count($tasks) === $originalCount) {
+                return false;
+            }
+
+            file_put_contents(
+                $this->storageFile,
+                json_encode(array_values($tasks), JSON_PRETTY_PRINT)
+            );
+
+            return true;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
 }

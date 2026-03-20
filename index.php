@@ -38,29 +38,6 @@ switch ($page) {
         ?>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        document.querySelectorAll('.delete-btn').forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                e.preventDefault();
-
-                let url = this.href;
-
-                Swal.fire({
-                    title: "Are you sure?",
-                    text: "This task will be deleted permanently!",
-                    icon: "warning",
-                    showCancelButton: true,
-                    confirmButtonColor: "#ef4444",
-                    cancelButtonColor: "#3b82f6",
-                    confirmButtonText: "Yes, delete it!"
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.href = url;
-                    }
-                });
-            });
-        });
-    </script>
 
     <?php if (isset($_SESSION['flash'])): ?>
         <script>
@@ -68,6 +45,10 @@ switch ($page) {
                 icon: "<?= $_SESSION['flash']['type'] ?>",
                 title: "<?= $_SESSION['flash']['type'] === 'success' ? 'Success' : 'Error' ?>",
                 text: "<?= $_SESSION['flash']['message'] ?>",
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000
             });
         </script>
     <?php unset($_SESSION['flash']);

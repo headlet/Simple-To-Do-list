@@ -2,11 +2,10 @@
 session_start();
 require_once __DIR__ . '/../../app/Controller/TaskManagerController.php';
 $taskManager = new TaskManagerController();
-$tasks = $taskManager->index();
 
-$action = $_GET['action'] ?? '';
+$action = $_GET['action'] ?? 'index';
 
-$taskManager->httpRequest($action);
+$tasks = $taskManager->httpRequest($action);
 
 ?>
 
@@ -41,10 +40,13 @@ $taskManager->httpRequest($action);
                                 <i class="fas fa-edit"></i>
                             </button>
 
-                            <a href="delete.php?id=<?= $task['id'] ?>"
-                                class="text-red-500 hover:text-red-700 delete-btn">
-                                <i class="fa-solid fa-trash"></i>
-                            </a>
+                            <form id="deleteForm_<?= $task['id'] ?>" action="index.php?action=delete" method="post" style="display:inline;">
+                                <input type="hidden" name="id" value="<?= $task['id'] ?>">
+                                <button type="button" class="text-red-500 hover:text-red-700 deleteBtn"
+                                    data-form-id="deleteForm_<?= $task['id'] ?>">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </form>
 
                             <i class="fa-solid fa-circle-check 
                     <?= ($task['status'] ?? '') === 'complete' ? 'text-green-500' : 'text-red-500' ?>">
@@ -85,16 +87,25 @@ $taskManager->httpRequest($action);
                 </h2>
 
                 <form action="index.php?action=create" method="post" class="space-y-4">
+                    
+                    <?php if (isset($_SESSION['formError'])): ?>
+                        <p class="text-red-500 text-sm mb-3">
+                            <?= $_SESSION['formError']['message'] ?>
+                        </p>
+                        <?php unset($_SESSION['formError']); ?>
+                    <?php endif; ?>
 
                     <input type="text" name="title"
                         placeholder="Enter task..."
-                        class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-400"
-                        required>
+                        class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-400">
 
-                    <input type="text" name="status"
-                        value="pending"
-                        readonly
-                        class="w-full bg-gray-100 border rounded-lg px-3 py-2 text-gray-500">
+                    <select name="status" id="edit_status"
+                        class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-400">
+
+                        <option value="pending" defa>Pending</option>
+                        <option value="complete">Complete</option>
+
+                    </select>
 
                     <button type="submit"
                         class="w-full bg-teal-500 hover:bg-teal-600 text-white py-2 rounded-lg">
@@ -133,8 +144,7 @@ $taskManager->httpRequest($action);
 
                     <input type="text" name="title" id="edit_title"
                         placeholder="Enter task..."
-                        class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-400"
-                        required>
+                        class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-400">
 
                     <select name="status" id="edit_status"
                         class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-400">
@@ -159,6 +169,8 @@ $taskManager->httpRequest($action);
 </section>
 
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
     $(document).ready(function() {
 
@@ -171,7 +183,6 @@ $taskManager->httpRequest($action);
         });
 
         $(".openEdit").click(function() {
-
             $("#editForm").fadeIn(200).removeClass("hidden");
 
             let id = $(this).data("id");
@@ -185,6 +196,27 @@ $taskManager->httpRequest($action);
 
         $("#closeEditForm").click(function() {
             $("#editForm").fadeOut(200).addClass('hidden');
+        });
+
+        // DELETE WITH SWAL
+        $(".deleteBtn").click(function(e) {
+            e.preventDefault();
+            let formId = $(this).data("form-id");
+
+            Swal.fire({
+                title: 'Delete Task?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById(formId).submit();
+                }
+            });
         });
 
     });

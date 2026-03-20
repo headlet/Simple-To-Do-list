@@ -1,8 +1,8 @@
 [
     {
         "id": 1,
-        "title": "Learn PHP OOP",
-        "status": "pending"
+        "title": "Learn PHP OOPs",
+        "status": "complete"
     },
     {
         "id": 2,
@@ -17,41 +17,6 @@
     {
         "id": 4,
         "title": "hello",
-        "status": "pending"
-    },
-    {
-        "id": 5,
-        "title": "fsafsf",
-        "status": "pending"
-    },
-    {
-        "id": 6,
-        "title": "fdsfsdfasfs",
-        "status": "pending"
-    },
-    {
-        "id": 7,
-        "title": "fafsaf",
-        "status": "pending"
-    },
-    {
-        "id": 8,
-        "title": "fsdafsfa",
-        "status": "pending"
-    },
-    {
-        "id": 9,
-        "title": "fsafsaf",
-        "status": "pending"
-    },
-    {
-        "id": 10,
-        "title": "fsdfsdfsa",
-        "status": "pending"
-    },
-    {
-        "id": 11,
-        "title": "................",
         "status": "pending"
     }
 ]

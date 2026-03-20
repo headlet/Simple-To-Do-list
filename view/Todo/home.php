@@ -4,26 +4,10 @@ require_once __DIR__ . '/../../app/Controller/TaskManagerController.php';
 $taskManager = new TaskManagerController();
 $tasks = $taskManager->index();
 
-//add task
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+$action = $_GET['action'] ?? '';
 
-    $result = $taskManager->create($_POST['title'], $_POST['status']);
+$taskManager->httpRequest($action);
 
-    if ($result === true) {
-        $_SESSION['flash'] = [
-            'type' => 'success',
-            'message' => 'Task added successfully!'
-        ];
-    } else {
-        $_SESSION['flash'] = [
-            'type' => 'error',
-            'message' => 'Something went wrong while adding task!'
-        ];
-    }
-
-    header("Location: index.php");
-    exit;
-}
 ?>
 
 <section class="min-h-screen bg-slate-100 p-4">
@@ -50,7 +34,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <span class="flex items-center gap-3">
 
                             <button
-                                class="text-blue-500 hover:text-blue-700">
+                                class="openEdit text-blue-500 hover:text-blue-700" data-id="<?= $task['id'] ?>"
+                                data-title="<?= $task['title'] ?>"
+                                data-status="<?= $task['status'] ?>">
+
                                 <i class="fas fa-edit"></i>
                             </button>
 
@@ -97,7 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     Add Task
                 </h2>
 
-                <form method="post" class="space-y-4">
+                <form action="index.php?action=create" method="post" class="space-y-4">
 
                     <input type="text" name="title"
                         placeholder="Enter task..."
@@ -122,7 +109,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <!-- Edit Task -->
-    <div id="editTaskModal"
+    <div id="editForm"
         class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm">
 
         <div class="flex items-center justify-center min-h-screen">
@@ -130,7 +117,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="bg-white w-full max-w-sm rounded-2xl shadow-lg p-6 relative">
 
                 <!-- Close Button -->
-                <button id="closeEditTaskModal"
+                <button id="closeEditForm"
                     class="absolute top-2 right-3 text-gray-500 hover:text-red-500 text-xl">
                     ✕
                 </button>
@@ -139,7 +126,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     Edit Task
                 </h2>
 
-                <form action="update.php" method="post" class="space-y-4">
+                <form action="index.php?action=edit" method="post" class="space-y-4">
 
                     <!-- Hidden ID -->
                     <input type="hidden" name="id" id="edit_id">
@@ -152,7 +139,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <select name="status" id="edit_status"
                         class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-400">
 
-                        <option value="pending">Pending</option>
+                        <option value="pending" defa>Pending</option>
                         <option value="complete">Complete</option>
 
                     </select>
@@ -180,7 +167,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         });
 
         $("#closeTaskModal").click(function() {
-            $("#taskModal").fadeOut(200);
+            $("#taskModal").fadeOut(200).addClass('hidden');
+        });
+
+        $(".openEdit").click(function() {
+
+            $("#editForm").fadeIn(200).removeClass("hidden");
+
+            let id = $(this).data("id");
+            let title = $(this).data("title");
+            let status = $(this).data("status");
+
+            $("#edit_id").val(id);
+            $("#edit_title").val(title);
+            $("#edit_status").val(status);
+        });
+
+        $("#closeEditForm").click(function() {
+            $("#editForm").fadeOut(200).addClass('hidden');
         });
 
     });

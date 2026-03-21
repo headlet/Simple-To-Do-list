@@ -40,20 +40,26 @@ class TaskManagerController
     public function handleCreateForm()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+            if (!isset($_POST['title'], $_POST['status'])) {
+                $_SESSION['formCreateError'] = [
+                    'message' => 'Missing required fields'
+                ];
+                header("Location: index.php");
+                exit;
+            }
+
             if ($_POST['title'] === '') {
-                $_SESSION['formError'] = [
+                $_SESSION['formCreateError'] = [
                     'message' => 'Title empty.. Please add title'
                 ];
-                exit;
             }
 
             if (!in_array($_POST['status'], ['pending', 'complete'])) {
-                $_SESSION['formError'] = [
+                $_SESSION['formCreateError'] = [
                     'message' => 'Please status.'
                 ];
-                exit;
             }
-
 
             $result = $this->create($_POST['title'], $_POST['status']);
 
@@ -83,7 +89,7 @@ class TaskManagerController
                 throw new Exception("Title cannot be empty");
             }
 
-            
+
             $newId = empty($tasks) ? 1 : end($tasks)['id'] + 1;
 
             $task = new Task($newId, htmlspecialchars(trim($title)), $status);
@@ -101,6 +107,18 @@ class TaskManagerController
     public function handleEditForm()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+            if (empty(trim($_POST["title"]))) {
+                $_SESSION['formEditError'] = [
+                    'message' => 'Title empty.. Please add title'
+                ];
+            }
+
+            if (!in_array($_POST['status'], ['pending', 'complete'])) {
+                $_SESSION['formEditError'] = [
+                    'message' => 'Invalid Status'
+                ];
+            }
 
             $result = $this->update(
                 $_POST['id'],
@@ -132,10 +150,6 @@ class TaskManagerController
 
             if (empty(trim($title))) {
                 throw new Exception("Title cannot be empty");
-            }
-
-            if (!in_array($status, ['pending', 'complete'])) {
-                throw new Exception("Invalid status");
             }
 
             foreach ($tasks as $key => $task) {

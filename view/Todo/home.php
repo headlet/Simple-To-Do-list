@@ -56,13 +56,15 @@ $tasks = $taskManager->httpRequest($action);
 
                     </li>
                 <?php endforeach; ?>
-
             <?php else: ?>
-
-                <li class="text-center  bg-white shadow-sm border rounded-lg px-4 py-3 hover:shadow-md transition">
-                    Please add Task
-                </li>
-
+                <div class="text-center bg-white shadow-sm border rounded-lg px-6 py-8 hover:shadow-md transition">
+                    <div class="mb-4">
+                        <i class="fas fa-tasks text-4xl text-gray-300 mb-3"></i>
+                    </div>
+                    <p class="text-gray-500 text-lg mb-4">
+                        No tasks yet. Time to get organized!
+                    </p>
+                </div>
             <?php endif; ?>
 
         </ul>
@@ -70,7 +72,8 @@ $tasks = $taskManager->httpRequest($action);
 
     <!-- Add Task -->
     <div id="taskModal"
-        class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm">
+        class="<?= isset($_SESSION['formCreateError']) ? 'block' : 'hidden' ?>
+ fixed inset-0 bg-black/50 backdrop-blur-sm">
 
         <div class="flex items-center justify-center min-h-screen">
 
@@ -87,12 +90,12 @@ $tasks = $taskManager->httpRequest($action);
                 </h2>
 
                 <form action="index.php?action=create" method="post" class="space-y-4">
-                    
-                    <?php if (isset($_SESSION['formError'])): ?>
-                        <p class="text-red-500 text-sm mb-3">
-                            <?= $_SESSION['formError']['message'] ?>
+
+                    <?php if (isset($_SESSION['formCreateError'])): ?>
+                        <p class="text-red-500 text-sm mb-3" id="errorMessage">
+                            <?= $_SESSION['formCreateError']['message'] ?>
                         </p>
-                        <?php unset($_SESSION['formError']); ?>
+                        <?php unset($_SESSION['formCreateError']); ?>
                     <?php endif; ?>
 
                     <input type="text" name="title"
@@ -121,7 +124,7 @@ $tasks = $taskManager->httpRequest($action);
 
     <!-- Edit Task -->
     <div id="editForm"
-        class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm">
+        class="<?= isset($_SESSION['formEditError']) ? 'block' : 'hidden' ?> fixed inset-0 bg-black/50 backdrop-blur-sm">
 
         <div class="flex items-center justify-center min-h-screen">
 
@@ -138,7 +141,12 @@ $tasks = $taskManager->httpRequest($action);
                 </h2>
 
                 <form action="index.php?action=edit" method="post" class="space-y-4">
-
+                    <?php if (isset($_SESSION['formEditError'])): ?>
+                        <p class="text-red-500 text-sm mb-3" id="errorMessage">
+                            <?= $_SESSION['formEditError']['message'] ?>
+                        </p>
+                        <?php unset($_SESSION['formEditError']); ?>
+                    <?php endif; ?>
                     <!-- Hidden ID -->
                     <input type="hidden" name="id" id="edit_id">
 
@@ -180,6 +188,8 @@ $tasks = $taskManager->httpRequest($action);
 
         $("#closeTaskModal").click(function() {
             $("#taskModal").fadeOut(200).addClass('hidden');
+            $("#errorMessage").remove();
+            $("#taskModal form")[0].reset();
         });
 
         $(".openEdit").click(function() {
@@ -196,6 +206,8 @@ $tasks = $taskManager->httpRequest($action);
 
         $("#closeEditForm").click(function() {
             $("#editForm").fadeOut(200).addClass('hidden');
+            $("#errorMessage").remove();
+            $("#taskModal form")[0].reset();
         });
 
         // DELETE WITH SWAL

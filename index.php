@@ -3,13 +3,6 @@
 $page = $_GET['view'] ?? 'home';
 
 switch ($page) {
-    case 'create':
-        $content = '';
-        break;
-
-    case 'edit':
-        $content = '';
-        break;
 
     default:
         $content = 'view/Todo/home.php';

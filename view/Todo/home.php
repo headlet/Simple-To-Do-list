@@ -147,7 +147,6 @@ $tasks = $taskManager->httpRequest($action);
                         </p>
                         <?php unset($_SESSION['formEditError']); ?>
                     <?php endif; ?>
-                    <!-- Hidden ID -->
                     <input type="hidden" name="id" id="edit_id">
 
                     <input type="text" name="title" id="edit_title"
@@ -157,9 +156,12 @@ $tasks = $taskManager->httpRequest($action);
                     <select name="status" id="edit_status"
                         class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-400">
 
-                        <option value="pending" defa>Pending</option>
-                        <option value="complete">Complete</option>
-
+                        <option value="pending" data-status="pending">
+                            <i class="fas fa-hourglass-start"></i> Pending
+                        </option>
+                        <option value="complete" data-status="complete">
+                            <i class="fas fa-check-circle"></i> Complete
+                        </option>
                     </select>
 
                     <button type="submit"

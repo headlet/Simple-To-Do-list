@@ -9,6 +9,15 @@ class TaskManagerController
         $this->storageFile = __DIR__ . '/../../storage/task.json';
     }
 
+     public function index()
+    {
+        if (!file_exists($this->storageFile)) {
+            file_put_contents($this->storageFile, json_encode([]));
+        }
+        $data = file_get_contents($this->storageFile);
+        return json_decode($data, true) ?? [];
+    }
+
     public function httpRequest($action)
     {
         switch ($action) {
@@ -19,6 +28,7 @@ class TaskManagerController
             case 'edit':
                 return $this->handleEditForm();
                 break;
+                
             case 'delete':
                 return $this->handleDeleteForm();
                 break;
@@ -28,14 +38,6 @@ class TaskManagerController
         }
     }
 
-    public function index()
-    {
-        if (!file_exists($this->storageFile)) {
-            file_put_contents($this->storageFile, json_encode([]));
-        }
-        $data = file_get_contents($this->storageFile);
-        return json_decode($data, true) ?? [];
-    }
 
     public function handleCreateForm()
     {

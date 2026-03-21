@@ -10,7 +10,6 @@ $tasks = $taskManager->httpRequest($action);
 ?>
 
 <section class="min-h-screen bg-slate-100 p-4">
-
     <!-- HEADER -->
     <div class="w-full  px-6 py-4">
         <h1 class="text-2xl font-bold text-blue-600 text-center">
@@ -22,16 +21,12 @@ $tasks = $taskManager->httpRequest($action);
     <div class="max-w-2xl mx-auto mt-6">
         <ul class="space-y-4">
             <?php if (!empty($tasks)): ?>
-
                 <?php foreach ($tasks as $task): ?>
                     <li class="flex items-center justify-between bg-white shadow-sm border rounded-lg px-4 py-3 hover:shadow-md transition">
-
                         <span class="text-slate-700 font-medium">
                             <?= $task['title'] ?>
                         </span>
-
                         <span class="flex items-center gap-3">
-
                             <button
                                 class="openEdit text-blue-500 hover:text-blue-700" data-id="<?= $task['id'] ?>"
                                 data-title="<?= $task['title'] ?>"
@@ -105,6 +100,8 @@ $tasks = $taskManager->httpRequest($action);
                     <select name="status"
                         class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-400">
 
+                        <option value="" selected disabled>Select status</option>
+
                         <option value="pending">Pending</option>
                         <option value="complete">Complete</option>
 
@@ -157,7 +154,7 @@ $tasks = $taskManager->httpRequest($action);
                         class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-400">
 
                         <option value="pending">
-                             Pending
+                            Pending
                         </option>
                         <option value="complete">
                             Complete

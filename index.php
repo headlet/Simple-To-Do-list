@@ -1,5 +1,4 @@
 <?php
-
 $page = $_GET['view'] ?? 'home';
 
 switch ($page) {

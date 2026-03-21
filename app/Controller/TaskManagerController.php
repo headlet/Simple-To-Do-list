@@ -50,10 +50,10 @@ class TaskManagerController
                 header("Location: index.php");
                 exit;
             }
-            
+
             if (!in_array($_POST['status'], ['pending', 'complete'])) {
                 $_SESSION['formCreateError'] = [
-                    'message' => 'Please status.'
+                    'message' => 'Please select status.'
                 ];
                 header("Location: index.php");
                 exit;

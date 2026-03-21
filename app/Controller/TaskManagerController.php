@@ -9,7 +9,7 @@ class TaskManagerController
         $this->storageFile = __DIR__ . '/../../storage/task.json';
     }
 
-     public function index()
+    public function index()
     {
         if (!file_exists($this->storageFile)) {
             file_put_contents($this->storageFile, json_encode([]));
@@ -28,7 +28,7 @@ class TaskManagerController
             case 'edit':
                 return $this->handleEditForm();
                 break;
-                
+
             case 'delete':
                 return $this->handleDeleteForm();
                 break;
@@ -43,42 +43,41 @@ class TaskManagerController
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-            if (!isset($_POST['title'], $_POST['status'])) {
+            if ($_POST['title'] === '') {
                 $_SESSION['formCreateError'] = [
-                    'message' => 'Missing required fields'
+                    'message' => 'Title empty.. Please add title'
+                ];
+                header("Location: index.php");
+                exit;
+            }
+            
+            if (!in_array($_POST['status'], ['pending', 'complete'])) {
+                $_SESSION['formCreateError'] = [
+                    'message' => 'Please status.'
                 ];
                 header("Location: index.php");
                 exit;
             }
 
-            if ($_POST['title'] === '') {
-                $_SESSION['formCreateError'] = [
-                    'message' => 'Title empty.. Please add title'
-                ];
+            if (isset($_POST['title'], $_POST['status'])) {
+
+                $result = $this->create($_POST['title'], $_POST['status']);
+
+                if ($result === true) {
+                    $_SESSION['flash'] = [
+                        'type' => 'success',
+                        'message' => 'Task added successfully!'
+                    ];
+                } else {
+                    $_SESSION['flash'] = [
+                        'type' => 'error',
+                        'message' => 'Something went wrong while adding task!'
+                    ];
+                }
+
+                header("Location: index.php");
+                exit;
             }
-
-            if (!in_array($_POST['status'], ['pending', 'complete'])) {
-                $_SESSION['formCreateError'] = [
-                    'message' => 'Please status.'
-                ];
-            }
-
-            $result = $this->create($_POST['title'], $_POST['status']);
-
-            if ($result === true) {
-                $_SESSION['flash'] = [
-                    'type' => 'success',
-                    'message' => 'Task added successfully!'
-                ];
-            } else {
-                $_SESSION['flash'] = [
-                    'type' => 'error',
-                    'message' => 'Something went wrong while adding task!'
-                ];
-            }
-
-            header("Location: index.php");
-            exit;
         }
     }
 
@@ -86,11 +85,6 @@ class TaskManagerController
     {
         try {
             $tasks = $this->index();
-
-            if (empty(trim($title))) {
-                throw new Exception("Title cannot be empty");
-            }
-
 
             $newId = empty($tasks) ? 1 : end($tasks)['id'] + 1;
 
@@ -114,20 +108,22 @@ class TaskManagerController
                 $_SESSION['formEditError'] = [
                     'message' => 'Title empty.. Please add title'
                 ];
-            }
 
+                header("Location: index.php");
+                exit;
+            }
             if (!in_array($_POST['status'], ['pending', 'complete'])) {
                 $_SESSION['formEditError'] = [
                     'message' => 'Invalid Status'
                 ];
+                header("Location: index.php");
+                exit;
             }
-
             $result = $this->update(
                 $_POST['id'],
                 $_POST['title'],
                 $_POST['status']
             );
-
             if ($result) {
                 $_SESSION['flash'] = [
                     'type' => 'success',
@@ -150,19 +146,10 @@ class TaskManagerController
         try {
             $tasks = $this->index();
 
-            if (empty(trim($title))) {
-                throw new Exception("Title cannot be empty");
-            }
-
             foreach ($tasks as $key => $task) {
-
                 if ($task['id'] == $id) {
-
                     $tasks[$key]['title'] = htmlspecialchars(trim($title));
-
-
                     $tasks[$key]['status'] = $status;
-
                     file_put_contents(
                         $this->storageFile,
                         json_encode($tasks, JSON_PRETTY_PRINT)

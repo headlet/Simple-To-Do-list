@@ -71,7 +71,7 @@ $tasks = $taskManager->httpRequest($action);
     </div>
 
     <!-- Add Task -->
-    <div id="taskModal"
+    <div id="createForm"
         class="<?= isset($_SESSION['formCreateError']) ? 'block' : 'hidden' ?>
  fixed inset-0 bg-black/50 backdrop-blur-sm">
 
@@ -80,7 +80,7 @@ $tasks = $taskManager->httpRequest($action);
             <div class="bg-white w-full max-w-sm rounded-2xl shadow-lg p-6 relative">
 
                 <!-- Close Button -->
-                <button id="closeTaskModal"
+                <button id="closeCreateForm"
                     class="absolute top-2 right-3 text-gray-500 hover:text-red-500 text-xl">
                     ✕
                 </button>
@@ -102,10 +102,10 @@ $tasks = $taskManager->httpRequest($action);
                         placeholder="Enter task..."
                         class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-400">
 
-                    <select name="status" id="edit_status"
+                    <select name="status"
                         class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-400">
 
-                        <option value="pending" defa>Pending</option>
+                        <option value="pending">Pending</option>
                         <option value="complete">Complete</option>
 
                     </select>
@@ -156,11 +156,11 @@ $tasks = $taskManager->httpRequest($action);
                     <select name="status" id="edit_status"
                         class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-400">
 
-                        <option value="pending" data-status="pending">
-                            <i class="fas fa-hourglass-start"></i> Pending
+                        <option value="pending">
+                             Pending
                         </option>
-                        <option value="complete" data-status="complete">
-                            <i class="fas fa-check-circle"></i> Complete
+                        <option value="complete">
+                            Complete
                         </option>
                     </select>
 
@@ -168,11 +168,8 @@ $tasks = $taskManager->httpRequest($action);
                         class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg">
                         Update Task
                     </button>
-
                 </form>
-
             </div>
-
         </div>
     </div>
 
@@ -184,12 +181,12 @@ $tasks = $taskManager->httpRequest($action);
 <script>
     $(document).ready(function() {
 
-        $("#openTaskModal").click(function() {
-            $("#taskModal").fadeIn(200).removeClass("hidden");
+        $("#openCreateForm").click(function() {
+            $("#createForm").fadeIn(200).removeClass("hidden");
         });
 
-        $("#closeTaskModal").click(function() {
-            $("#taskModal").fadeOut(200).addClass('hidden');
+        $("#closeCreateForm").click(function() {
+            $("#createForm").fadeOut(200).addClass('hidden');
             $("#errorMessage").remove();
             $("#taskModal form")[0].reset();
         });
@@ -212,7 +209,6 @@ $tasks = $taskManager->httpRequest($action);
             $("#taskModal form")[0].reset();
         });
 
-        // DELETE WITH SWAL
         $(".deleteBtn").click(function(e) {
             e.preventDefault();
             let formId = $(this).data("form-id");
